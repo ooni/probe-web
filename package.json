@@ -1,0 +1,16 @@
+{
+  "name": "probe-web",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "Arturo Filastò <arturo@filasto.net>",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.2.4"
+  },
+  "dependencies": {
+    "whatwg-fetch": "^3.6.2"
+  }
+}
