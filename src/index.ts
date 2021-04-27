@@ -8,20 +8,18 @@ type GeoIPLookup = {
 
 class Measurer {
 
-    src: string;
-    element: string;
+    input: string;
     startTime: number;
     geoipLookup: GeoIPLookup;
 
-    constructor(element: string, src: string, geoipLookup: GeoIPLookup) {
-        this.element = element
-        this.src = src
+    constructor(input: string, geoipLookup: GeoIPLookup) {
+        this.input = input 
         this.geoipLookup = geoipLookup
     }
 
     measure() {
-        let el = document.createElement(this.element)
-        el.setAttribute('src', this.src)
+        let el = document.createElement('img')
+        el.setAttribute('src', this.input)
         el.addEventListener('load', () => {
             const endTime = Date.now()
             this.submitResult(endTime)
@@ -37,7 +35,7 @@ class Measurer {
     submitResult(endTime: number) {
         console.log('OK')
         console.log({
-            'input': this.src,
+            'input': this.input,
             'result': 'ok',
             'result_failure': null,
             'test_runtime': endTime - this.startTime,
@@ -50,7 +48,7 @@ class Measurer {
     submitError(endTime: number, error) {
         console.log('Error')
         console.log({
-            'input': this.src,
+            'input': this.input,
             'result': 'error',
             'result_failure': error,
             'test_runtime': endTime - this.startTime,
@@ -78,24 +76,13 @@ async function lookupGeoIP() : Promise<GeoIPLookup> {
     }
 }
 
-type InputSpec = {
-    element: string,
-    src: string
-};
-
-type InputList = Array<InputSpec>;
+type InputList = Array<string>;
 
 async function lookupInputs() : Promise<InputList> {
     return new Promise((resolve, reject) => {
         resolve([
-            {
-                src: 'https://twitter.com/favicon.ico',
-                element: 'img' 
-            },
-            {
-                src: 'https://thepiratebay.se/favicon.ico',
-                element: 'img' 
-            }
+                'https://twitter.com/favicon.ico',
+                'https://thepiratebay.se/favicon.ico',
         ])
     })
 }
@@ -106,7 +93,7 @@ async function main() {
     const inputs = await lookupInputs()
     console.log(inputs)
     inputs.forEach(i => {
-        const m = new Measurer(i.element, i.src, geoIPlookup)
+        const m = new Measurer(i, geoIPlookup)
         m.measure()
     })
 }
