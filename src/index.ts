@@ -1,67 +1,27 @@
-import 'whatwg-fetch'
-
 type GeoIPLookup = {
     asn: number,
     organization: string,
     country: string
 };
 
-class Measurer {
+type TestKeys = {
+    result: string
+}
 
-    input: string;
-    startTime: number;
-    geoipLookup: GeoIPLookup;
-
-    constructor(input: string, geoipLookup: GeoIPLookup) {
-        this.input = input 
-        this.geoipLookup = geoipLookup
-    }
-
-    measure() {
-        let el = document.createElement('img')
-        el.setAttribute('src', this.input)
-        el.addEventListener('load', () => {
-            const endTime = Date.now()
-            this.submitResult(endTime)
-        })
-        el.addEventListener('error', (err) => {
-            const endTime = Date.now()
-            this.submitError(endTime, err)
-        })
-        this.startTime = Date.now()
-        document.getElementById('measurer').appendChild(el)
-    }
-
-    submitResult(endTime: number) {
-        console.log('OK')
-        console.log({
-            'input': this.input,
-            'result': 'ok',
-            'result_failure': null,
-            'test_runtime': endTime - this.startTime,
-            'probe_asn': this.geoipLookup.asn,
-            'probe_cc': this.geoipLookup.country,
-            'probe_network_name': this.geoipLookup.organization,
-        })
-    }
-
-    submitError(endTime: number, error) {
-        console.log('Error')
-        console.log({
-            'input': this.input,
-            'result': 'error',
-            'result_failure': error,
-            'test_runtime': endTime - this.startTime,
-            'probe_asn': this.geoipLookup.asn,
-            'probe_cc': this.geoipLookup.country,
-            'probe_network_name': this.geoipLookup.organization,
-        })
-    }
-};
+type Measurement = {
+    input: string,
+    test_start_time: string,
+    measurement_start_time: string,
+    test_runtime: number,
+    probe_asn: string,
+    probe_cc: string,
+    probe_network_name: string,
+    test_keys: TestKeys,
+}
 
 async function lookupGeoIP() : Promise<GeoIPLookup> {
     try {
-        const resp = await window.fetch('https://get.geojs.io/v1/ip/geo.json')
+        const resp = await fetch('https://get.geojs.io/v1/ip/geo.json')
         const j = await resp.json()
         const g: GeoIPLookup = {
             asn: j['asn'],
@@ -81,21 +41,43 @@ type InputList = Array<string>;
 async function lookupInputs() : Promise<InputList> {
     return new Promise((resolve, reject) => {
         resolve([
-                'https://twitter.com/favicon.ico',
-                'https://thepiratebay.se/favicon.ico',
+                'https://twitter.com/',
+                'https://thepiratebay.se/',
         ])
     })
 }
 
+async function measure(input: string) : Promise<[string, number]> {
+    let result : string;
+    const start_time = performance.now()
+    try {
+        await fetch(input, {method: 'GET', mode: 'no-cors', cache: 'no-store'})
+        result = 'ok'
+    } catch(error) {
+        result = 'error'
+    }
+    return [result, performance.now() - start_time]
+}
+
 async function main() {
     const geoIPlookup : GeoIPLookup = await lookupGeoIP()
-    console.log(geoIPlookup)
+    console.log('looked up geoIP', geoIPlookup)
     const inputs = await lookupInputs()
-    console.log(inputs)
-    inputs.forEach(i => {
-        const m = new Measurer(i, geoIPlookup)
-        m.measure()
-    })
+    console.log('looked up inputs', inputs)
+    for (const i of inputs) {
+        let measurement : Measurement = {};
+        measurement.probe_asn = `AS${geoIPlookup.asn}`
+        measurement.probe_cc = geoIPlookup.country
+        measurement.probe_network_name = geoIPlookup.organization
+        measurement.input = i
+        measurement.test_start_time = `${Date.now()}`
+        measurement.measurement_start_time = `${Date.now()}`
+
+        let [result, runtime] = await measure(i, geoIPlookup)
+        measurement.test_runtime = runtime
+        measurement.test_keys = {'result': result}
+        console.log(measurement)
+    }
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
