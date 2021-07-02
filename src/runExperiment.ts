@@ -41,8 +41,8 @@ type InputList = Array<string>;
 async function lookupInputs() : Promise<InputList> {
     return new Promise((resolve, reject) => {
         resolve([
-                'https://twitter.com/',
-                'https://thepiratebay.se/',
+            'https://twitter.com/',
+            'https://thepiratebay.se/',
         ])
     })
 }
@@ -59,28 +59,28 @@ async function measure(input: string) : Promise<[string, number]> {
     return [result, performance.now() - start_time]
 }
 
-async function main() {
+
+async function runExperiment(measurementDone : Function) {
     const geoIPlookup : GeoIPLookup = await lookupGeoIP()
     console.log('looked up geoIP', geoIPlookup)
     const inputs = await lookupInputs()
     console.log('looked up inputs', inputs)
     for (const i of inputs) {
-        let measurement : Measurement = {};
-        measurement.probe_asn = `AS${geoIPlookup.asn}`
-        measurement.probe_cc = geoIPlookup.country
-        measurement.probe_network_name = geoIPlookup.organization
-        measurement.input = i
-        measurement.test_start_time = `${Date.now()}`
-        measurement.measurement_start_time = `${Date.now()}`
-
-        let [result, runtime] = await measure(i, geoIPlookup)
+        let measurement : Measurement = {
+            probe_asn: `AS${geoIPlookup.asn}`,
+            probe_cc: geoIPlookup.country,
+            probe_network_name: geoIPlookup.organization,
+            input: i,
+            test_start_time: `${Date.now()}`,
+            measurement_start_time: `${Date.now()}`,
+            test_runtime: -1,
+            test_keys: {result: ""}
+        };
+        let [result, runtime] = await measure(i)
         measurement.test_runtime = runtime
         measurement.test_keys = {'result': result}
-        console.log(measurement)
+        measurementDone(measurement)
     }
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    console.log('DOM fully loaded and parsed');
-    main()
-})
+export default runExperiment
