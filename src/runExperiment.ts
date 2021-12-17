@@ -73,7 +73,12 @@ async function measure(input: string) : Promise<[string, number]> {
     let result : string;
     const start_time = performance.now()
     try {
-        await fetch(input, {method: 'GET', mode: 'no-cors', cache: 'no-store'})
+        await fetch(input, {
+            method: 'GET',
+            mode: 'no-cors',
+            cache: 'no-store',
+            credentials: 'omit'
+        })
         result = 'ok'
     } catch(error) {
         result = 'error'
