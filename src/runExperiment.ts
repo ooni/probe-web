@@ -86,12 +86,11 @@ async function measure(input: string) : Promise<[string, number]> {
     return [result, performance.now() - start_time]
 }
 
-
-async function runExperiment(measurementDone : Function) {
+async function runExperiment(postUpdate: Function) {
     const geoIPlookup : GeoIPLookup = await lookupGeoIP()
-    console.log('looked up geoIP', geoIPlookup)
+    postUpdate('looked up geoIP', geoIPlookup)
     const inputs = await lookupInputs(geoIPlookup)
-    console.log('looked up inputs', inputs)
+    postUpdate('looked up inputs', inputs)
     for (const i of inputs) {
         const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19)
         let measurement : Measurement = {
@@ -104,11 +103,11 @@ async function runExperiment(measurementDone : Function) {
             test_runtime: -1,
             test_keys: {result: ""}
         };
-        console.log(`Measuring ${i}`)
+        postUpdate(`Measuring ${i}`)
         let [result, runtime] = await measure(i)
         measurement.test_runtime = runtime
         measurement.test_keys = {'result': result}
-        measurementDone(measurement)
+        postUpdate(`Measured: ${JSON.stringify(measurement)}`)
     }
 }
 
