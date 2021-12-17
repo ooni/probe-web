@@ -38,13 +38,35 @@ async function lookupGeoIP() : Promise<GeoIPLookup> {
 
 type InputList = Array<string>;
 
-async function lookupInputs() : Promise<InputList> {
-    return new Promise((resolve, reject) => {
-        resolve([
-            'https://twitter.com/',
-            'https://thepiratebay.se/',
-        ])
+async function lookupInputs(geoip_lookup : GeoIPLookup) : Promise<InputList> {
+    const req = {
+        "charging": true,
+        "on_wifi": true,
+        "platform": "browser",
+        "probe_asn": `AS${geoip_lookup.asn}`,
+        "probe_cc": geoip_lookup.country,
+        "run_type": "timed",
+        "software_name": "ooniprobe-web",
+        "software_version": "0.0.1",
+        "web_connectivity": {
+            "category_codes": []
+        }
+    }
+    const resp = await fetch('https://api.ooni.io/api/v1/check-in', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(req)
     })
+    const j = await resp.json()
+    console.log(j)
+    try {
+        return j['tests']['web_connectivity']['urls'].map(u => u.url)
+    } catch(e) {
+        console.log('failed to lookup inputs', e)
+        throw e
+    }
 }
 
 async function measure(input: string) : Promise<[string, number]> {
@@ -63,19 +85,21 @@ async function measure(input: string) : Promise<[string, number]> {
 async function runExperiment(measurementDone : Function) {
     const geoIPlookup : GeoIPLookup = await lookupGeoIP()
     console.log('looked up geoIP', geoIPlookup)
-    const inputs = await lookupInputs()
+    const inputs = await lookupInputs(geoIPlookup)
     console.log('looked up inputs', inputs)
     for (const i of inputs) {
+        const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19)
         let measurement : Measurement = {
             probe_asn: `AS${geoIPlookup.asn}`,
             probe_cc: geoIPlookup.country,
             probe_network_name: geoIPlookup.organization,
             input: i,
-            test_start_time: `${Date.now()}`,
-            measurement_start_time: `${Date.now()}`,
+            test_start_time: timestamp,
+            measurement_start_time: timestamp,
             test_runtime: -1,
             test_keys: {result: ""}
         };
+        console.log(`Measuring ${i}`)
         let [result, runtime] = await measure(i)
         measurement.test_runtime = runtime
         measurement.test_keys = {'result': result}
