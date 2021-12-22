@@ -1,3 +1,8 @@
+
+const software_name = 'ooniprobe-web'
+const software_version = '0.0.1'
+const data_format_version = '0.2.0'
+
 type GeoIPLookup = {
     asn: number,
     organization: string,
@@ -9,12 +14,18 @@ type TestKeys = {
 }
 
 type Measurement = {
+    report_id: string,
     input: string,
     test_start_time: string,
     measurement_start_time: string,
     test_runtime: number,
     probe_asn: string,
     probe_cc: string,
+    software_name: string,
+    software_version: string,
+    test_name: string,
+    test_version: string,
+    data_format_version: string,
     probe_network_name: string,
     test_keys: TestKeys,
 }
@@ -58,6 +69,8 @@ async function measure(input: string) : Promise<[string, number]> {
 class Runner {
     geoip : GeoIPLookup;
 
+    apiBaseURL : string;
+
     // onLog is a handler that is called whenever a log message needs to be
     // written to the log console.
     private onLog: Function;
@@ -74,6 +87,7 @@ class Runner {
         this.onLog = onLog
         this.onProgress = onProgress
         this.onStatus = onStatus
+        this.apiBaseURL = 'https://ams-pg-test.ooni.org'
     }
 
     async lookupInputs(): Promise<InputList> {
@@ -84,13 +98,15 @@ class Runner {
             "probe_asn": `AS${this.geoip.asn}`,
             "probe_cc": this.geoip.country,
             "run_type": "timed",
-            "software_name": "ooniprobe-web",
-            "software_version": "0.0.1",
+            "software_name": software_name,
+            "software_version": software_version,
             "web_connectivity": {
                 "category_codes": []
             }
         }
-        const resp = await fetch('https://api.ooni.io/api/v1/check-in', {
+        const checkInURL = `${this.apiBaseURL}/api/v1/check-in`
+        this.onLog(`Fetching URLs via ${checkInURL}`)
+        const resp = await fetch(checkInURL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -107,20 +123,76 @@ class Runner {
         }
     }
 
+    async openReport(test_start_time : string, test_name : string, test_version : string) : Promise<string> {
+        const req = {
+            "data_format_version": data_format_version,
+            "format": "json",
+            "probe_asn": `AS${this.geoip.asn}`,
+            "probe_cc": this.geoip.country,
+            "software_name": software_name,
+            "software_version": software_version,
+            "test_name": test_name,
+            "test_start_time": test_start_time,
+            "test_version": test_version
+          }
+        const openReportURL = `${this.apiBaseURL}/report`
+        this.onLog(`Opening report via ${openReportURL}`)
+        const resp = await fetch(openReportURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req)
+        })
+        const j = await resp.json()
+        return j['report_id']
+    }
+
+    async submitMeasurement(measurement : Measurement) : Promise<string> {
+        const req = {
+            "content": measurement,
+            "format": "json"
+        }
+        const submitMeasurementURL = `${this.apiBaseURL}/report/${measurement.report_id}`
+        this.onLog(`Submitting measurement via ${submitMeasurementURL}`)
+        const resp = await fetch(submitMeasurementURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req)
+        })
+        const j = await resp.json()
+        return j['measurement_uid']
+    }
+
     async run() : Promise<> {
+        const test_name = 'browser_web'
+        const test_version = '0.1.0'
+
         this.geoip = await lookupGeoIP()
         this.onLog('looked up geoIP', this.geoip)
         const inputs = await this.lookupInputs()
         this.onLog('looked up inputs', inputs)
+
+        const test_start_time = new Date().toISOString().replace('T', ' ').slice(0, 19)
+        const report_id = await this.openReport(test_start_time, test_name, test_version)
+
         for (const i of inputs) {
-            const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 19)
+            const measurement_start_time = new Date().toISOString().replace('T', ' ').slice(0, 19)
             let measurement: Measurement = {
+                software_name,
+                software_version,
+                test_start_time,
+                test_name,
+                test_version,
+                data_format_version,
+                report_id,
+                measurement_start_time,
                 probe_asn: `AS${this.geoip.asn}`,
                 probe_cc: this.geoip.country,
                 probe_network_name: this.geoip.organization,
                 input: i,
-                test_start_time: timestamp,
-                measurement_start_time: timestamp,
                 test_runtime: -1,
                 test_keys: { result: "" }
             };
@@ -130,6 +202,8 @@ class Runner {
             measurement.test_runtime = runtime
             measurement.test_keys = { 'result': result }
             this.onLog(`Measured: ${JSON.stringify(measurement)}`)
+            const msmtUID = await this.submitMeasurement(measurement)
+            this.onLog(`Submitted measurement with UID ${msmtUID}`)
         }
 
     }
