@@ -6,6 +6,7 @@ import { theme } from 'ooni-components'
 import { Routes, Route, Link } from "react-router-dom";
 
 import RunningTest from './components/RunningTest'
+import Onboard from './components/Onboard'
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -27,6 +28,7 @@ const App = () => {
             <GlobalStyle />
             <Routes>
                 <Route path="run" element={<RunningTest/>} />
+                <Route path="onboard" element={<Onboard />} />
             </Routes>
         </ThemeProvider>
     );
