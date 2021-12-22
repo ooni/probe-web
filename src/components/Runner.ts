@@ -30,6 +30,15 @@ type Measurement = {
     test_keys: TestKeys,
 }
 
+export type RunnerOptions = {
+    onLog: Function,
+    onProgress: Function,
+    onStatus: Function,
+    onResults: Function,
+    uploadResults: boolean,
+    urlLimit: number
+}
+
 async function lookupGeoIP() : Promise<GeoIPLookup> {
     try {
         const resp = await fetch('https://get.geojs.io/v1/ip/geo.json')
@@ -90,11 +99,16 @@ class Runner {
     // some better approach should be devised.
     private onResults: Function;
 
-    constructor(onLog : Function, onProgress : Function, onStatus : Function, onResults : Function) {
-        this.onLog = onLog
-        this.onProgress = onProgress
-        this.onStatus = onStatus
-        this.onResults = onResults
+    private uploadResults: boolean;
+    private urlLimit: number;
+
+    constructor(options : RunnerOptions) {
+        this.uploadResults = options.uploadResults
+        this.onLog = options.onLog
+        this.onProgress = options.onProgress
+        this.onStatus = options.onStatus
+        this.onResults = options.onResults
+        this.urlLimit = options.urlLimit
         this.apiBaseURL = 'https://ams-pg-test.ooni.org'
     }
 
@@ -122,9 +136,12 @@ class Runner {
             body: JSON.stringify(req)
         })
         const j = await resp.json()
-        console.log(j)
         try {
-            return j['tests']['web_connectivity']['urls'].map(u => u.url)
+            let urls = j['tests']['web_connectivity']['urls'].map(u => u.url)
+            if (this.urlLimit !== 0) {
+                urls = urls.slice(0, this.urlLimit)
+            }
+            return urls
         } catch (e) {
             console.log('failed to lookup inputs', e)
             throw e
@@ -186,8 +203,10 @@ class Runner {
         this.onLog('looked up inputs', inputs)
 
         const test_start_time = new Date().toISOString().replace('T', ' ').slice(0, 19)
-        const report_id = await this.openReport(test_start_time, test_name, test_version)
-
+        let report_id = ''
+        if (this.uploadResults === true) {
+            report_id = await this.openReport(test_start_time, test_name, test_version)
+        }
         for (const i of inputs) {
             const measurement_start_time = new Date().toISOString().replace('T', ' ').slice(0, 19)
             let measurement: Measurement = {
@@ -212,9 +231,13 @@ class Runner {
             measurement.test_runtime = runtime
             measurement.test_keys = { 'result': result }
             this.onLog(`Measured: ${JSON.stringify(measurement)}`)
-            const msmtUID = await this.submitMeasurement(measurement)
+
+            if (this.uploadResults === true) {
+                const msmtUID = await this.submitMeasurement(measurement)
+                this.onLog(`Submitted measurement with UID ${msmtUID}`)
+            }
+
             results.push(measurement)
-            this.onLog(`Submitted measurement with UID ${msmtUID}`)
         }
         this.onResults(results)
     }
