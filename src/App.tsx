@@ -50,6 +50,7 @@ const LogContainer = styled.div`
 
 const App = () => {
     const [ logs, setLog ] = useState([])
+    const [ results, setResults] = useState([])
     const [ status, setStatus] = useState('')
     const [ progress, setProgress] = useState(0)
 
@@ -68,9 +69,12 @@ const App = () => {
         setStatus(s)
     }
 
+    const onResults = (r) => {
+        setResults(r)
+    }
 
     useEffect(() => {
-        const runner = new Runner(onLog, onProgress, onStatus)
+        const runner = new Runner(onLog, onProgress, onStatus, onResults)
         runnerRef.current = runner
         runner.run()
     }, [])
@@ -90,6 +94,9 @@ const App = () => {
                     {logs.map(l => <Text>{l.toString()}</Text>)}
                     <div ref={logEndRef}></div>
                 </LogContainer>
+                <ul>
+                    {results.map(r => <li>{r.test_keys.result == 'ok' ? '✅' : '❌'} {r.input} ({r.test_runtime})</li>)}
+                </ul>
             </div>
         </ThemeProvider>
 

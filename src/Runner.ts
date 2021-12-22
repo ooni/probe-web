@@ -83,10 +83,18 @@ class Runner {
     // running test is updated. Only one state is possible at a given moment.
     private onStatus: Function;
 
-    constructor(onLog : Function, onProgress : Function, onStatus : Function) {
+    // onResults is a handler that is called when the test has finished running
+    // and results are available.
+    // XXX maybe it's cleaner to return this via the promise from run(), however
+    // it's considered an antipattern to do that inside of the useEffect hook so
+    // some better approach should be devised.
+    private onResults: Function;
+
+    constructor(onLog : Function, onProgress : Function, onStatus : Function, onResults : Function) {
         this.onLog = onLog
         this.onProgress = onProgress
         this.onStatus = onStatus
+        this.onResults = onResults
         this.apiBaseURL = 'https://ams-pg-test.ooni.org'
     }
 
@@ -167,6 +175,8 @@ class Runner {
     }
 
     async run() : Promise<> {
+        let results = []
+
         const test_name = 'browser_web'
         const test_version = '0.1.0'
 
@@ -203,9 +213,10 @@ class Runner {
             measurement.test_keys = { 'result': result }
             this.onLog(`Measured: ${JSON.stringify(measurement)}`)
             const msmtUID = await this.submitMeasurement(measurement)
+            results.push(measurement)
             this.onLog(`Submitted measurement with UID ${msmtUID}`)
         }
-
+        this.onResults(results)
     }
 }
 
