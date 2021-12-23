@@ -242,6 +242,7 @@ class Runner {
 
             results.push(measurement)
         }
+        this.onProgress(100)
         this.onResults(results)
     }
 }

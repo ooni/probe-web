@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { Line } from 'rc-progress'
 
@@ -41,11 +42,12 @@ const RunningTest = () => {
     const [ results, setResults] = useState([])
     const [ status, setStatus] = useState('Starting...')
     const [ progress, setProgress] = useState(0)
+    const [ searchParams, setSearchParams ] = useSearchParams()
 
     const runnerRef = useRef<Runner>()
     const logEndRef = useRef<HTMLDivElement>()
 
-    const runnerOptions : RunnerOptions = {
+    let runnerOptions : RunnerOptions = {
         onLog: (l) => {
             setLog(logs => [...logs, l])
         },
@@ -57,6 +59,12 @@ const RunningTest = () => {
     }
 
     useEffect(() => {
+        const qOptions = searchParams.get('options')
+        if (qOptions) {
+            const parsedOptions = JSON.parse(atob(qOptions))
+            runnerOptions.urlLimit = parsedOptions.urlLimit
+            runnerOptions.uploadResults = parsedOptions.uploadResults
+        }
         const runner = new Runner(runnerOptions)
         runnerRef.current = runner
         runner.run()
