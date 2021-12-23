@@ -6,10 +6,12 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
+    "gh-pages": "^3.2.3",
     "parcel": "^2.0.0-beta.2",
     "parcel-bundler": "^1.12.5",
     "typescript": "^4.2.4"
