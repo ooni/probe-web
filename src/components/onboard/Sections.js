@@ -33,6 +33,10 @@ import FormattedMarkdownMessage from '../FormattedMarkdownMessage'
 import Stepper from './Stepper'
 import QuizSteps from './QuizSteps'
 
+import onboardURL0 from '../../../public/static/images/onboarding_0.svg'
+import onboardURL1 from '../../../public/static/images/onboarding_1.svg'
+import onboardURL2 from '../../../public/static/images/onboarding_2.svg'
+
 const HeadsUpList = styled.li`
   margin-top: 20px;
   margin-bottom: 20px;
@@ -215,10 +219,10 @@ const BackButtonContainer = styled.div`
 const numSteps = 4
 
 const onboardingBGs = [
-  '/static/images/onboarding_0.svg',
-  '/static/images/onboarding_1.svg',
-  '/static/images/onboarding_2.svg',
-  '/static/images/onboarding_2.svg'
+  onboardURL0,
+  onboardURL1,
+  onboardURL2,
+  onboardURL2
 ]
 
 const Sections = ({ onGo }) => {
