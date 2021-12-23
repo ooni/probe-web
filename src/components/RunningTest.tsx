@@ -1,11 +1,15 @@
 import * as React from 'react'
 import { useState, useRef, useEffect } from 'react'
 
+import { Line } from 'rc-progress'
+
 import styled from 'styled-components'
 
 import { 
     Heading,
-    Text
+    Text,
+    Container,
+    theme
 } from 'ooni-components'
 
 import Runner from './Runner'
@@ -65,7 +69,10 @@ const RunningTest = () => {
     return (
         <div className="App">
             <HeroUnit>
-                <Heading h={2} px={4} color='white'>{status}</Heading>
+                <Container>
+                    <Heading h={2} px={4} color='white'>{status}</Heading>
+                    <Line percent={progress} strokeColor={theme.colors.gray5} />
+                </Container>
             </HeroUnit>
             <LogContainer>
                 {logs.map(l => <Text>{l.toString()}</Text>)}

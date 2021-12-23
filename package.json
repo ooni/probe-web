@@ -5,7 +5,8 @@
   "author": "Arturo Filastò <arturo@filasto.net>",
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
@@ -15,6 +16,8 @@
   },
   "dependencies": {
     "ooni-components": "^0.4.7",
+    "rc-progress": "^3.2.1",
+    "rc-util": "^5.16.1",
     "react": "^16.0.0 || ^17.0.0",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",
