@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react'
+import * as React from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import styled from 'styled-components'
 
@@ -37,8 +38,8 @@ const RunningTest = () => {
     const [ status, setStatus] = useState('Starting...')
     const [ progress, setProgress] = useState(0)
 
-    const runnerRef = useRef()
-    const logEndRef = useRef()
+    const runnerRef = useRef<Runner>()
+    const logEndRef = useRef<HTMLDivElement>()
 
     const runnerOptions : RunnerOptions = {
         onLog: (l) => {
