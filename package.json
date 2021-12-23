@@ -6,8 +6,8 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html",
-    "deploy": "gh-pages -d dist"
+    "build": "parcel build --public-url './' index.html",
+    "deploy": "yarn run build && gh-pages -d dist"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
