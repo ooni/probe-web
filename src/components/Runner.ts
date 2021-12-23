@@ -207,7 +207,10 @@ class Runner {
         if (this.uploadResults === true) {
             report_id = await this.openReport(test_start_time, test_name, test_version)
         }
-        for (const i of inputs) {
+        for (let idx = 0; idx < inputs.length; idx++) {
+            let i = inputs[idx]
+            let progress = idx/inputs.length * 100
+            this.onProgress(progress)
             const measurement_start_time = new Date().toISOString().replace('T', ' ').slice(0, 19)
             let measurement: Measurement = {
                 software_name,
@@ -239,6 +242,7 @@ class Runner {
 
             results.push(measurement)
         }
+        this.onProgress(100)
         this.onResults(results)
     }
 }
