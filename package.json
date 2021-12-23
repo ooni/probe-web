@@ -12,8 +12,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "gh-pages": "^3.2.3",
-    "parcel": "^2.0.0-beta.2",
-    "parcel-bundler": "^1.12.5",
+    "parcel": "2.0.1",
     "typescript": "^4.2.4"
   },
   "dependencies": {
