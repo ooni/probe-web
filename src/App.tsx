@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
 
 import { theme } from 'ooni-components'
-import { Routes, Route, HashRouter, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import RunningTest from './components/RunningTest'
 import Onboard from './components/Onboard'
@@ -37,13 +37,11 @@ const App = () => {
     return (
         <ThemeProvider theme={theme}>
             <GlobalStyle />
-            <HashRouter>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="run" element={<RunningTest />} />
-                    <Route path="onboard" element={<Onboard />} />
-                </Routes>
-            </HashRouter>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="run" element={<RunningTest />} />
+                <Route path="onboard" element={<Onboard />} />
+            </Routes>
         </ThemeProvider>
     );
 }

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { IntlProvider } from 'react-intl'
 
 import messages from '../lang/en.json'
@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     console.log('DOM fully loaded and parsed');
     ReactDOM.render(
         <IntlProvider locale='en' messages={messages}>
-            <BrowserRouter>
+            <HashRouter>
                 <App />
-            </BrowserRouter>
+            </HashRouter>
         </IntlProvider>,
         document.getElementById('root')
     );
