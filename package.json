@@ -7,6 +7,7 @@
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build --public-url './' index.html",
+    "lint": "prettier --write src/",
     "deploy": "yarn run build && gh-pages -d dist"
   },
   "devDependencies": {
