@@ -1,24 +1,26 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import { Flex, Box } from 'ooni-components'
+import React from "react";
+import PropTypes from "prop-types";
+import styled from "styled-components";
+import { Flex, Box } from "ooni-components";
 
 const StepperCircle = styled(Box)`
-  background-color: ${props => props.active ? props.theme.colors.white : props.theme.colors.blue5};
+  background-color: ${(props) =>
+    props.active ? props.theme.colors.white : props.theme.colors.blue5};
   width: 15px;
   height: 15px;
   border-radius: 15px;
-`
+`;
 
 const StepperLine = styled(Box)`
-  background-color: ${props => props.active ? props.theme.colors.white : props.theme.colors.blue5};
+  background-color: ${(props) =>
+    props.active ? props.theme.colors.white : props.theme.colors.blue5};
   width: 50px;
   height: 3px;
-`
+`;
 
-const Stepper = ({activeIdx}) => {
+const Stepper = ({ activeIdx }) => {
   return (
-    <Flex justifyContent='center' alignItems='center'>
+    <Flex justifyContent="center" alignItems="center">
       <StepperCircle active={true} />
       <StepperLine active={activeIdx > 0} />
       <StepperCircle active={activeIdx > 0} />
@@ -27,11 +29,11 @@ const Stepper = ({activeIdx}) => {
       <StepperLine active={activeIdx > 2} />
       <StepperCircle active={activeIdx > 2} />
     </Flex>
-  )
-}
+  );
+};
 
 Stepper.propTypes = {
-  activeIdx: PropTypes.number.isRequired
-}
+  activeIdx: PropTypes.number.isRequired,
+};
 
-export default Stepper
+export default Stepper;

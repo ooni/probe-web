@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { useEffect } from 'react'
+import * as React from "react";
+import { useEffect } from "react";
 
-import { createGlobalStyle, ThemeProvider } from 'styled-components'
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 
-import { theme } from 'ooni-components'
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { theme } from "ooni-components";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
-import RunningTest from './components/RunningTest'
-import Onboard from './components/Onboard'
-import Home from './components/Home'
+import RunningTest from "./components/RunningTest";
+import Onboard from "./components/Onboard";
+import Home from "./components/Home";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -23,28 +23,27 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
     background-color: #ffffff;
   }
-`
+`;
 const App = () => {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const consent = window.localStorage.getItem('informedConsent');
-        if (consent !== 'yes') {
-            navigate('onboard')
-        }
-    }, [])
+  useEffect(() => {
+    const consent = window.localStorage.getItem("informedConsent");
+    if (consent !== "yes") {
+      navigate("onboard");
+    }
+  }, []);
 
-    return (
-        <ThemeProvider theme={theme}>
-            <GlobalStyle />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="run" element={<RunningTest />} />
-                <Route path="onboard" element={<Onboard />} />
-            </Routes>
-        </ThemeProvider>
-    );
-}
+  return (
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="run" element={<RunningTest />} />
+        <Route path="onboard" element={<Onboard />} />
+      </Routes>
+    </ThemeProvider>
+  );
+};
 
 export default App;
-    
