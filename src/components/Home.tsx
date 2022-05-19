@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { Controller, useForm } from "react-hook-form"
 
 import { 
     Container, Text, Button, Heading,
@@ -15,19 +15,17 @@ import {
 import { useNavigate } from 'react-router'
 
 const Home = () => {
-    const [ uploadResults, setUploadResults ] = useState(true)
-    const [ urlLimit, setUrlLimit ] = useState(0)
-
-    const runOptions = {
-        urlLimit,
-        uploadResults
-    }
+    const { register, handleSubmit, control, formState: { errors } } = useForm({
+        defaultValues: {
+            uploadResults: true,
+            urlLimit: 0,
+        }
+    });
 
     const navigate = useNavigate()
 
-    const onStart = () => {
-        const options = btoa(JSON.stringify(runOptions))
-        navigate(`/run?options=${options}`)
+    const onStart = (options) => {
+        navigate(`/run?options=${btoa(JSON.stringify(options))}`)
     }
 
     return (
@@ -41,16 +39,22 @@ const Home = () => {
                     <Label>
                         Upload results
                     </Label>
-                    <Checkbox onChange={() => setUploadResults(!uploadResults)} checked={uploadResults} />
+                    <Controller
+                        control={control}
+                        name="uploadResults"
+                        render={({field: {onChange, onBlur, value, name}}) => (
+                            <input type="checkbox" onChange={onChange} onBlur={onBlur} name={name} checked={value} />
+                        )
+                    } />
                 </Box>
                 <Box width={1/2}>
                     <Label>
                         URL Limit (0 for no limit)
                     </Label>
-                    <Input type='number' onChange={(v) => setUrlLimit(Number(v.target.value))} value={urlLimit} />
+                    <Input defaultValue={0} {...register("urlLimit")} />
                 </Box>
             </Flex>
-            <Button mt={3} onClick={onStart}>Start</Button>
+            <Button mt={3} onClick={handleSubmit(onStart)}>Start</Button>
         </Container>
     )
 }
