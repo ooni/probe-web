@@ -51,7 +51,8 @@ const RunningTest = () => {
     onProgress: setProgress,
     onStatus: setStatus,
     onFinish: setFinished,
-    onResult: (newResult : Measurement) => setResults(prevResults => [...prevResults, newResult]),
+    onResult: (newResult: Measurement) =>
+      setResults((prevResults) => [...prevResults, newResult]),
     uploadResults: true,
     urlLimit: 10,
   };
@@ -70,7 +71,7 @@ const RunningTest = () => {
 
   useEffect(() => {
     if (finished === false) {
-        logEndRef.current.scrollIntoView({ behavior: "smooth" });
+      logEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   });
 
@@ -81,15 +82,19 @@ const RunningTest = () => {
           <Heading h={2} px={4} color="white">
             {finished ? "Finished" : status}
           </Heading>
-          {!finished && <Line percent={progress} strokeColor={theme.colors.gray5} />}
+          {!finished && (
+            <Line percent={progress} strokeColor={theme.colors.gray5} />
+          )}
         </Container>
       </HeroUnit>
-      {!finished && <LogContainer>
-        {logs.map((l) => (
-          <Text>{l.toString()}</Text>
-        ))}
-        <div ref={logEndRef}></div>
-      </LogContainer>}
+      {!finished && (
+        <LogContainer>
+          {logs.map((l) => (
+            <Text>{l.toString()}</Text>
+          ))}
+          <div ref={logEndRef}></div>
+        </LogContainer>
+      )}
       <ul>
         {results.map((r) => (
           <li>

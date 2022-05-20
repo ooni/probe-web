@@ -1,7 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import Sections from "./onboard/Sections";
-import { Modal } from "ooni-components"
+import { Modal } from "ooni-components";
 
 import { useNavigate } from "react-router-dom";
 
