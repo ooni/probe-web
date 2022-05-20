@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { Heading, Text, Container, theme } from "ooni-components";
 
 import Runner from "./Runner";
-import type { RunnerOptions } from "./Runner";
+import type { RunnerOptions, Measurement } from "./Runner";
 
 const HeroUnit = styled.div`
   background: linear-gradient(
@@ -38,6 +38,7 @@ const RunningTest = () => {
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState("Starting...");
   const [progress, setProgress] = useState(0);
+  const [finished, setFinished] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const runnerRef = useRef<Runner>();
@@ -49,7 +50,8 @@ const RunningTest = () => {
     },
     onProgress: setProgress,
     onStatus: setStatus,
-    onResults: setResults,
+    onFinish: setFinished,
+    onResult: (newResult : Measurement) => setResults(prevResults => [...prevResults, newResult]),
     uploadResults: true,
     urlLimit: 10,
   };
@@ -67,7 +69,9 @@ const RunningTest = () => {
   }, []);
 
   useEffect(() => {
-    logEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (finished === false) {
+        logEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   });
 
   return (
@@ -75,17 +79,17 @@ const RunningTest = () => {
       <HeroUnit>
         <Container>
           <Heading h={2} px={4} color="white">
-            {status}
+            {finished ? "Finished" : status}
           </Heading>
-          <Line percent={progress} strokeColor={theme.colors.gray5} />
+          {!finished && <Line percent={progress} strokeColor={theme.colors.gray5} />}
         </Container>
       </HeroUnit>
-      <LogContainer>
+      {!finished && <LogContainer>
         {logs.map((l) => (
           <Text>{l.toString()}</Text>
         ))}
         <div ref={logEndRef}></div>
-      </LogContainer>
+      </LogContainer>}
       <ul>
         {results.map((r) => (
           <li>

@@ -51,7 +51,7 @@ const OnboardBG = styled(Flex)`
   background: ${(props) => `no-repeat url(${props.img})`};
   background-color: ${(props) => props.bgColor || "#002b54"};
   background-size: contain;
-  height: 100vh;
+  height: 500px;
 `;
 
 const SectionThingsToKnow = ({

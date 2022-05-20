@@ -13,7 +13,7 @@ type TestKeys = {
   load_time_ms: number;
 };
 
-type Measurement = {
+export type Measurement = {
   report_id: string;
   input: string;
   test_start_time: string;
@@ -34,7 +34,8 @@ export type RunnerOptions = {
   onLog: Function;
   onProgress: Function;
   onStatus: Function;
-  onResults: Function;
+  onResult: Function;
+  onFinish: Function;
   uploadResults: boolean;
   urlLimit: number;
 };
@@ -86,12 +87,15 @@ class Runner {
   // running test is updated. Only one state is possible at a given moment.
   private onStatus: Function;
 
-  // onResults is a handler that is called when the test has finished running
+  // onFinish is a handler that is called when the test has finished running
   // and results are available.
   // XXX maybe it's cleaner to return this via the promise from run(), however
   // it's considered an antipattern to do that inside of the useEffect hook so
   // some better approach should be devised.
-  private onResults: Function;
+  private onFinish: Function;
+
+  // onResult is called every time we have a measurement result available
+  private onResult: Function;
 
   private uploadResults: boolean;
   private urlLimit: number;
@@ -101,7 +105,8 @@ class Runner {
     this.onLog = options.onLog;
     this.onProgress = options.onProgress;
     this.onStatus = options.onStatus;
-    this.onResults = options.onResults;
+    this.onResult = options.onResult;
+    this.onFinish = options.onFinish;
     this.urlLimit = options.urlLimit;
     this.apiBaseURL = "https://ams-pg-test.ooni.org";
   }
@@ -248,10 +253,10 @@ class Runner {
         const msmtUID = await this.submitMeasurement(measurement);
         this.onLog(`Submitted measurement with UID ${msmtUID}`);
       }
-      results.push(measurement);
+      this.onResult(measurement);
     }
     this.onProgress(100);
-    this.onResults(results);
+    this.onFinish(true);
     return results;
   }
 }
