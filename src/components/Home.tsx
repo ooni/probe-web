@@ -1,60 +1,83 @@
-import * as React from 'react'
-import { useState } from 'react'
-
-import styled from 'styled-components'
-
-import { 
-    Container, Text, Button, Heading,
-    Flex, Box
-} from 'ooni-components'
+import * as React from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import {
-    Checkbox,
-    Input,
-    Label
-} from '@rebass/forms'
+  Container,
+  Text,
+  Button,
+  Heading,
+  Flex,
+  Box,
+  theme,
+} from "ooni-components";
+import OONILogo from "./OONILogo";
 
-import { useNavigate } from 'react-router'
+import { Input, Label } from "@rebass/forms";
+
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-    const [ uploadResults, setUploadResults ] = useState(true)
-    const [ urlLimit, setUrlLimit ] = useState(0)
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      uploadResults: true,
+      urlLimit: 0,
+    },
+  });
 
-    const runOptions = {
-        urlLimit,
-        uploadResults
-    }
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
+  const resetInformedConsent = () => {
+    window.localStorage.clear();
+    navigate("/onboard");
+  };
 
-    const onStart = () => {
-        const options = btoa(JSON.stringify(runOptions))
-        navigate(`/run?options=${options}`)
-    }
+  const onStart = (options) => {
+    navigate(`/run?options=${btoa(JSON.stringify(options))}`);
+  };
 
-    return (
-        <Container>
-            <Heading>Welcome to OONI Probe Web</Heading>
-            <Text>Ready to start an OONI Probe test? Click start below.</Text>
+  return (
+    <Container>
+      <Heading>Welcome to OONI Probe Web</Heading>
+      <Text>Ready to start an OONI Probe test? Click start below.</Text>
 
-            <Heading h={3}>Settings</Heading>
-            <Flex>
-                <Box width={1/2}>
-                    <Label>
-                        Upload results
-                    </Label>
-                    <Checkbox onChange={() => setUploadResults(!uploadResults)} checked={uploadResults} />
-                </Box>
-                <Box width={1/2}>
-                    <Label>
-                        URL Limit (0 for no limit)
-                    </Label>
-                    <Input type='number' onChange={(v) => setUrlLimit(Number(v.target.value))} value={urlLimit} />
-                </Box>
-            </Flex>
-            <Button mt={3} onClick={onStart}>Start</Button>
-        </Container>
-    )
-}
+      <Heading h={3}>Settings</Heading>
+      <Flex flexWrap="wrap">
+        <Box width={1 / 2}>
+          <Label>Upload results</Label>
+          <Controller
+            control={control}
+            name="uploadResults"
+            render={({ field: { onChange, onBlur, value, name } }) => (
+              <input
+                type="checkbox"
+                onChange={onChange}
+                onBlur={onBlur}
+                name={name}
+                checked={value}
+              />
+            )}
+          />
+        </Box>
+        <Box width={1 / 2}>
+          <Label>URL Limit (0 for no limit)</Label>
+          <Input defaultValue={0} {...register("urlLimit")} />
+        </Box>
+        <Box width={1 / 2}>
+          <Button hollow onClick={resetInformedConsent}>
+            Reset onboarding
+          </Button>
+        </Box>
+      </Flex>
+      <Button mt={3} onClick={handleSubmit(onStart)}>
+        Start
+      </Button>
+    </Container>
+  );
+};
 
-export default Home
+export default Home;
