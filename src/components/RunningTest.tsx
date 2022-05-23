@@ -6,10 +6,18 @@ import { Line } from "rc-progress";
 
 import styled from "styled-components";
 
-import { Heading, Text, Container, theme } from "ooni-components";
+import {
+  Flex,
+  Box,
+  Heading,
+  Text,
+  Container,
+  Button,
+  theme,
+} from "ooni-components";
 
 import Runner from "./Runner";
-import type { RunnerOptions, Measurement } from "./Runner";
+import type { RunnerOptions, ResultEntry } from "./Runner";
 
 const HeroUnit = styled.div`
   background: linear-gradient(
@@ -33,31 +41,63 @@ const LogContainer = styled.div`
   overflow: scroll;
 `;
 
+const ResultRow = ({ resultEntry }) => {
+  const url = resultEntry.url,
+    m = resultEntry.measurement;
+  return (
+    <Flex>
+      <Box pr={2}>{m.test_keys.result == "ok" ? "✅" : "❌"}</Box>
+      <Box pr={2}>{Math.round(m.test_keys.load_time_ms)} ms</Box>
+      <Box pr={2}>
+        {url.category_code} - {url.url}
+      </Box>
+    </Flex>
+  );
+};
+
 const RunningTest = () => {
   const [logs, setLog] = useState([]);
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState("Starting...");
   const [progress, setProgress] = useState(0);
-  const [finished, setFinished] = useState(false);
+  const [running, setRunning] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const runnerRef = useRef<Runner>();
   const logEndRef = useRef<HTMLDivElement>();
 
   let runnerOptions: RunnerOptions = {
-    onLog: (l) => {
+    onLog: (l: string) => {
       setLog((logs) => [...logs, l]);
     },
     onProgress: setProgress,
     onStatus: setStatus,
-    onFinish: setFinished,
-    onResult: (newResult: Measurement) =>
+    onFinish: (success: boolean) => {
+      if (success === false) {
+        setFailed(true);
+      }
+      setRunning(false);
+    },
+    onResult: (newResult: ResultEntry) =>
       setResults((prevResults) => [...prevResults, newResult]),
     uploadResults: true,
     urlLimit: 10,
   };
 
+  const rerun = () => {
+    setLog([]);
+    setResults([]);
+    setStatus("Starting...");
+    setProgress(0);
+    setFailed(false);
+    setRunning(true);
+  };
+
   useEffect(() => {
+    if (running === false) {
+      return;
+    }
     const qOptions = searchParams.get("options");
     if (qOptions) {
       const parsedOptions = JSON.parse(atob(qOptions));
@@ -67,10 +107,10 @@ const RunningTest = () => {
     const runner = new Runner(runnerOptions);
     runnerRef.current = runner;
     runner.run();
-  }, []);
+  }, [running]);
 
   useEffect(() => {
-    if (finished === false) {
+    if (running === true) {
       logEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   });
@@ -80,14 +120,21 @@ const RunningTest = () => {
       <HeroUnit>
         <Container>
           <Heading h={2} px={4} color="white">
-            {finished ? "Finished" : status}
+            {!running && !failed && "Finished"}
+            {!running && failed && "Test failed"}
+            {running && status}
           </Heading>
-          {!finished && (
+          {running && (
             <Line percent={progress} strokeColor={theme.colors.gray5} />
+          )}
+          {!running && (
+            <Button hollow inverted onClick={rerun}>
+              Rerun
+            </Button>
           )}
         </Container>
       </HeroUnit>
-      {!finished && (
+      {running && (
         <LogContainer>
           {logs.map((l) => (
             <Text>{l.toString()}</Text>
@@ -97,10 +144,7 @@ const RunningTest = () => {
       )}
       <ul>
         {results.map((r) => (
-          <li>
-            {r.test_keys.result == "ok" ? "✅" : "❌"} {r.input} (
-            {r.test_runtime})
-          </li>
+          <ResultRow resultEntry={r} />
         ))}
       </ul>
     </div>

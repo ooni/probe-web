@@ -41,7 +41,7 @@ const Home = () => {
   };
 
   return (
-    <Container>
+    <Container pt={2}>
       <Heading>Welcome to OONI Probe Web</Heading>
       <Text>Ready to start an OONI Probe test? Click start below.</Text>
 
