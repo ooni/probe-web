@@ -37,10 +37,22 @@ export type RunnerOptions = {
   onResult: Function;
   onFinish: Function;
   uploadResults: boolean;
+  apiBaseURL?: string;
   urlLimit: number;
 };
 
-type InputList = Array<string>;
+export type URLEntry = {
+  url: string;
+  category_code: string;
+  country_code: string;
+};
+
+export type URLList = Array<URLEntry>;
+
+export type ResultEntry = {
+  url: URLEntry;
+  measurement: Measurement;
+};
 
 async function measure(input: string): Promise<[string, number]> {
   let result: string;
@@ -61,7 +73,6 @@ async function measure(input: string): Promise<[string, number]> {
         "Accept-Charset": "ISO-8859-1,utf-8;q=0.7,*;q=0.3",
       },
     });
-    console.log(resp);
     result = "ok";
   } catch (error) {
     console.log("failed to measure with error", error);
@@ -73,7 +84,7 @@ async function measure(input: string): Promise<[string, number]> {
 class Runner {
   geoip: GeoIPLookup;
 
-  apiBaseURL: string;
+  apiBaseURL: string = "https://ams-pg-test.ooni.org";
 
   // onLog is a handler that is called whenever a log message needs to be
   // written to the log console.
@@ -108,10 +119,13 @@ class Runner {
     this.onResult = options.onResult;
     this.onFinish = options.onFinish;
     this.urlLimit = options.urlLimit;
-    this.apiBaseURL = "https://ams-pg-test.ooni.org";
+
+    if (options.apiBaseURL !== undefined) {
+      this.apiBaseURL = options.apiBaseURL;
+    }
   }
 
-  async checkinRequest(): Promise<InputList> {
+  async checkinRequest(): Promise<URLList> {
     const req = {
       charging: true,
       on_wifi: true,
@@ -139,7 +153,7 @@ class Runner {
       probe_network_name: j["probe_network_name"],
     };
 
-    let urls = j["tests"]["web_connectivity"]["urls"].map((u) => u.url);
+    let urls = j["tests"]["web_connectivity"]["urls"];
     if (this.urlLimit !== 0) {
       urls = urls.slice(0, this.urlLimit);
     }
@@ -199,9 +213,15 @@ class Runner {
     const test_name = "browser_web";
     const test_version = "0.1.0";
 
-    this.onLog("looked up geoIP", this.geoip);
-    const inputs = await this.checkinRequest();
-    this.onLog("looked up inputs", inputs);
+    this.onLog("starting test");
+    let inputs: URLList;
+    try {
+      inputs = await this.checkinRequest();
+    } catch (error) {
+      this.onLog("‼ failed to communicate with the check-in API: ${error}");
+      return this.onFinish(false);
+    }
+    this.onLog("looked up inputs and GeoIP", inputs);
 
     const test_start_time = new Date()
       .toISOString()
@@ -216,7 +236,7 @@ class Runner {
       );
     }
     for (let idx = 0; idx < inputs.length; idx++) {
-      let i = inputs[idx];
+      let url_entry = inputs[idx];
       let progress = (idx / inputs.length) * 100;
       this.onProgress(progress);
       const measurement_start_time = new Date()
@@ -235,13 +255,13 @@ class Runner {
         probe_asn: this.geoip.probe_asn,
         probe_cc: this.geoip.probe_cc,
         probe_network_name: this.geoip.probe_network_name,
-        input: i,
+        input: url_entry.url,
         test_runtime: 0,
         test_keys: { result: "", load_time_ms: 0 },
       };
-      this.onStatus(`Measuring ${i}`);
-      this.onLog(`Measuring ${i}`);
-      let [result, runtime] = await measure(i);
+      this.onStatus(`Measuring ${url_entry.url}`);
+      this.onLog(`Measuring ${url_entry.url}`);
+      let [result, runtime] = await measure(url_entry.url);
       measurement.test_runtime = runtime / 1000;
       measurement.test_keys = {
         result: result,
@@ -250,10 +270,14 @@ class Runner {
       this.onLog(`Measured: ${JSON.stringify(measurement)}`);
 
       if (this.uploadResults === true) {
-        const msmtUID = await this.submitMeasurement(measurement);
-        this.onLog(`Submitted measurement with UID ${msmtUID}`);
+        try {
+          const msmtUID = await this.submitMeasurement(measurement);
+          this.onLog(`Submitted measurement with UID ${msmtUID}`);
+        } catch (error) {
+          this.onLog("‼ failed to upload measurement: ${error}");
+        }
       }
-      this.onResult(measurement);
+      this.onResult({ url: url_entry, measurement });
     }
     this.onProgress(100);
     this.onFinish(true);
