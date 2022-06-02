@@ -16,7 +16,7 @@ import { Input, Label } from "@rebass/forms";
 
 import { useNavigate } from "react-router-dom";
 
-const Home = () => {
+const Home = ({onResetInformedConsent}) => {
   const {
     register,
     handleSubmit,
@@ -31,17 +31,12 @@ const Home = () => {
 
   const navigate = useNavigate();
 
-  const resetInformedConsent = () => {
-    window.localStorage.clear();
-    navigate("/onboard");
-  };
-
   const onStart = (options) => {
     navigate(`/run?options=${btoa(JSON.stringify(options))}`);
   };
 
   return (
-    <Container>
+    <Container pt={2}>
       <Heading>Welcome to OONI Probe Web</Heading>
       <Text>Ready to start an OONI Probe test? Click start below.</Text>
 
@@ -68,7 +63,7 @@ const Home = () => {
           <Input defaultValue={0} {...register("urlLimit")} />
         </Box>
         <Box width={1 / 2}>
-          <Button hollow onClick={resetInformedConsent}>
+          <Button hollow onClick={onResetInformedConsent}>
             Reset onboarding
           </Button>
         </Box>

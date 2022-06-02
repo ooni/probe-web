@@ -1,14 +1,14 @@
 import * as React from "react";
-import { useEffect } from "react";
+import { useState } from "react";
 
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import styled from "styled-components";
 
-import { Flex, Box, Heading, theme } from "ooni-components";
+import { Flex, Box, Heading, Modal, Text, theme } from "ooni-components";
 import { Routes, Route, useNavigate } from "react-router-dom";
 
 import RunningTest from "./components/RunningTest";
-import Onboard from "./components/Onboard";
+import Sections from "./components/onboard/Sections";
 import Home from "./components/Home";
 import OONILogo from "./components/OONILogo";
 
@@ -40,15 +40,45 @@ const Content = styled.div`
   margin-left: 300px;
 `;
 
-const App = () => {
-  const navigate = useNavigate();
+const UnsupportedBrowserContainer = styled.div`
+  height: 90vh;
+  width: 90vw;
+  padding: 30px;
+  text-align: center;
+`
 
-  useEffect(() => {
-    const consent = window.localStorage.getItem("informedConsent");
-    if (consent !== "yes") {
-      navigate("onboard");
+const OnboardSectionContainer = styled.div`
+  color: ${(props) => props.theme.colors.white};
+`;
+
+
+const isBrowserSupported = () => {
+  return 'fetch' in window
+  return !('fetch' in window)
+}
+
+const gaveInformedConsent = () => {
+    return window.localStorage.getItem("informedConsent") === "yes";
+}
+
+const App = () => {
+  const [informedConsent, setInformedConsent] = useState(gaveInformedConsent());
+
+  const onGo = (crashReporting: boolean) => {
+    if (crashReporting === true) {
+      window.localStorage.setItem("crashReporting", "yes");
+    } else {
+      window.localStorage.setItem("crashReporting", "no");
     }
-  }, []);
+    window.localStorage.setItem("informedConsent", "yes");
+    setInformedConsent(true);
+  };
+
+  const onResetInformedConsent = () => {
+    window.localStorage.clear();
+    setInformedConsent(false);
+  };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -65,11 +95,31 @@ const App = () => {
           </Flex>
         </SideBar>
         <Content>
+
+          <Modal show={!isBrowserSupported()} borderRadius="30px">
+            <UnsupportedBrowserContainer>
+              <Heading>Your browser is not supported</Heading>
+              <Text>Please upgrade to a modern browser</Text>
+              <ul>
+                <li><a href="https://www.mozilla.org/firefox/download/">Mozilla Firefox</a></li>
+                <li><a href="https://www.google.com/chrome/">Google Chrome</a></li>
+                <li><a href="https://brave.com/">Brave Browser</a></li>
+              </ul>
+            </UnsupportedBrowserContainer>
+          </Modal>
+
+          <Modal show={!informedConsent && isBrowserSupported()} borderRadius="30px">
+            <OnboardSectionContainer>
+              <Sections onGo={onGo} />
+            </OnboardSectionContainer>
+          </Modal>
+
+          {informedConsent && 
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home onResetInformedConsent={onResetInformedConsent} />} />
             <Route path="run" element={<RunningTest />} />
-            <Route path="onboard" element={<Onboard />} />
           </Routes>
+          }
         </Content>
       </AppContainer>
     </ThemeProvider>
