@@ -7,14 +7,16 @@
     "start": "parcel index.html",
     "build": "parcel build --public-url './' index.html",
     "lint": "prettier --write src/",
+    "analyze": "parcel index.html --reporter @parcel/reporter-bundle-analyzer",
     "deploy": "yarn run build && gh-pages -d dist"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-react": "^7.17.12",
+    "@parcel/reporter-bundle-analyzer": "^2.6.0",
     "@parcel/transformer-svg-react": "^2.5.0",
     "gh-pages": "^3.2.3",
-    "parcel": "2.5.0",
+    "parcel": "2.6.0",
     "prettier": "^2.6.2",
     "process": "^0.11.10",
     "typescript": "^4.2.4"
@@ -29,7 +31,7 @@
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.31.1",
     "react-icon-base": "^2.1.2",
-    "react-icons": "^4.3.1",
+    "react-icons": "^4.4.0",
     "react-intl": "^5.24.0",
     "react-lottie-player": "^1.4.1",
     "react-router-dom": "6",
