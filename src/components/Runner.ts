@@ -238,6 +238,10 @@ class Runner {
     for (let idx = 0; idx < inputs.length; idx++) {
       let url_entry = inputs[idx];
       let progress = (idx / inputs.length) * 100;
+      if (url_entry.url.startsWith("http://") === true) {
+        this.onLog(`Skipping ${url_entry.url} because it's HTTP`);
+        continue;
+      }
       this.onProgress(progress);
       const measurement_start_time = new Date()
         .toISOString()
