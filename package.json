@@ -1,6 +1,6 @@
 {
   "name": "probe-web",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "author": "Arturo Filastò <arturo@filasto.net>",
   "license": "BSD-3-Clause",
   "scripts": {
