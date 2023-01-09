@@ -1,5 +1,5 @@
 const software_name = "ooniprobe-web";
-const software_version = "0.0.1";
+const software_version = require("../../package.json")["version"];
 const data_format_version = "0.2.0";
 
 type GeoIPLookup = {
