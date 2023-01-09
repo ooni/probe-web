@@ -58,7 +58,7 @@ const isBrowserSupported = () => {
 }
 
 const gaveInformedConsent = () => {
-    return window.localStorage.getItem("informedConsent") === "yes";
+  return window.localStorage.getItem("informedConsent") === "yes";
 }
 
 const App = () => {
@@ -108,17 +108,17 @@ const App = () => {
             </UnsupportedBrowserContainer>
           </Modal>
 
-          <Modal show={!informedConsent && isBrowserSupported()} sx={{ borderRadius: 30 }}>
+          <Modal show={!informedConsent && isBrowserSupported()} borderRadius={30}>
             <OnboardSectionContainer>
               <Sections onGo={onGo} />
             </OnboardSectionContainer>
           </Modal>
 
-          {informedConsent && 
-          <Routes>
-            <Route path="/" element={<Home onResetInformedConsent={onResetInformedConsent} />} />
-            <Route path="run" element={<RunningTest />} />
-          </Routes>
+          {informedConsent &&
+            <Routes>
+              <Route path="/" element={<Home onResetInformedConsent={onResetInformedConsent} />} />
+              <Route path="run" element={<RunningTest />} />
+            </Routes>
           }
         </Content>
       </AppContainer>
