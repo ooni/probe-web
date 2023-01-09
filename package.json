@@ -5,7 +5,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build --public-url './' index.html",
+    "build": "parcel build --public-url 'https://ooni.github.io/probe-web/' index.html",
     "lint": "prettier --write src/",
     "analyze": "parcel index.html --reporter @parcel/reporter-bundle-analyzer",
     "deploy": "yarn run build && gh-pages -d dist"
