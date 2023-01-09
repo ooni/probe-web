@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 
+import styled from "styled-components"
+
 import {
   Container,
   Text,
@@ -12,11 +14,22 @@ import {
 } from "ooni-components";
 import OONILogo from "./OONILogo";
 
+import { getBrowserName } from "./utils";
+
 import { Input, Label } from "@rebass/forms";
 
 import { useNavigate } from "react-router-dom";
 
-const Home = ({onResetInformedConsent}) => {
+const AlertBanner = styled.div`
+padding: 8px 16px;
+border-radius: 4px;
+margin-top: 8px;
+margin-bottom: 8px;
+border: 1px solid transparent;
+background-color: ${(props) => props.theme.colors.yellow2};
+`
+
+const Home = ({ onResetInformedConsent }) => {
   const {
     register,
     handleSubmit,
@@ -29,6 +42,8 @@ const Home = ({onResetInformedConsent}) => {
     },
   });
 
+  const browserName = getBrowserName();
+
   const navigate = useNavigate();
 
   const onStart = (options) => {
@@ -38,6 +53,14 @@ const Home = ({onResetInformedConsent}) => {
   return (
     <Container pt={2}>
       <Heading>Welcome to OONI Probe Web</Heading>
+
+      {browserName == "firefox" && <AlertBanner>
+        <Text>You appear to be using firefox.
+          For accurate measurements, please be sure to <a href="https://support.mozilla.org/en-US/kb/enhanced-tracking-protection-firefox-desktop#w_strict-enhanced-tracking-protection">disable strict enhanced tracking protection</a> for this site.
+        </Text>
+      </AlertBanner>
+      }
+
       <Text>Ready to start an OONI Probe test? Click start below.</Text>
 
       <Heading h={3}>Settings</Heading>

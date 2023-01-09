@@ -69,6 +69,7 @@ const RunningTest = () => {
 
   let runnerOptions: RunnerOptions = {
     onLog: (l: string) => {
+      console.log(l)
       setLog((logs) => [...logs, l]);
     },
     onProgress: setProgress,
