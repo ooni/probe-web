@@ -2,6 +2,8 @@ const software_name = "ooniprobe-web";
 const software_version = require("../../package.json")["version"];
 const data_format_version = "0.2.0";
 
+import { getBrowserName } from "./utils"
+
 type GeoIPLookup = {
   probe_cc: string;
   probe_asn: string;
@@ -9,6 +11,7 @@ type GeoIPLookup = {
 };
 
 type TestKeys = {
+  browser_name: string;
   result: string;
   load_time_ms: number;
 };
@@ -111,6 +114,9 @@ class Runner {
   private uploadResults: boolean;
   private urlLimit: number;
 
+  // String indicating the name of the browser
+  private browserName: string;
+
   constructor(options: RunnerOptions) {
     this.uploadResults = options.uploadResults;
     this.onLog = options.onLog;
@@ -119,6 +125,7 @@ class Runner {
     this.onResult = options.onResult;
     this.onFinish = options.onFinish;
     this.urlLimit = options.urlLimit;
+    this.browserName = getBrowserName();
 
     if (options.apiBaseURL !== undefined) {
       this.apiBaseURL = options.apiBaseURL;
@@ -154,7 +161,7 @@ class Runner {
     };
 
     let urls = j["tests"]["web_connectivity"]["urls"];
-    if (this.urlLimit !== 0) {
+    if (this.urlLimit != 0) {
       urls = urls.slice(0, this.urlLimit);
     }
     return urls;
@@ -229,11 +236,16 @@ class Runner {
       .slice(0, 19);
     let report_id = "";
     if (this.uploadResults === true) {
-      report_id = await this.openReport(
-        test_start_time,
-        test_name,
-        test_version
-      );
+      try {
+        report_id = await this.openReport(
+          test_start_time,
+          test_name,
+          test_version
+        );
+      } catch (error) {
+        this.onLog("‼ failed to open report: ${error}");
+        return this.onFinish(false);
+      }
     }
     for (let idx = 0; idx < inputs.length; idx++) {
       let url_entry = inputs[idx];
@@ -247,6 +259,7 @@ class Runner {
         .toISOString()
         .replace("T", " ")
         .slice(0, 19);
+
       let measurement: Measurement = {
         software_name,
         software_version,
@@ -261,7 +274,7 @@ class Runner {
         probe_network_name: this.geoip.probe_network_name,
         input: url_entry.url,
         test_runtime: 0,
-        test_keys: { result: "", load_time_ms: 0 },
+        test_keys: { result: "", load_time_ms: 0, browser_name: this.browserName },
       };
       this.onStatus(`Measuring ${url_entry.url}`);
       this.onLog(`Measuring ${url_entry.url}`);
@@ -270,6 +283,7 @@ class Runner {
       measurement.test_keys = {
         result: result,
         load_time_ms: runtime,
+        browser_name: this.browserName
       };
       this.onLog(`Measured: ${JSON.stringify(measurement)}`);
 

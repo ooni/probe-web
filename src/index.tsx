@@ -2,6 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter } from "react-router-dom";
 import { IntlProvider } from "react-intl";
+import "@fontsource/fira-sans";
 
 import messages from "../lang/en.json";
 
