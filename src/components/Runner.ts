@@ -250,6 +250,8 @@ class Runner {
     for (let idx = 0; idx < inputs.length; idx++) {
       let url_entry = inputs[idx];
       let progress = (idx / inputs.length) * 100;
+      // We skip http:// URLs because if they are blocked with blockpages, they
+      // would lead to false negatives.
       if (url_entry.url.startsWith("http://") === true) {
         this.onLog(`Skipping ${url_entry.url} because it's HTTP`);
         continue;

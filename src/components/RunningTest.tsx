@@ -6,6 +6,8 @@ import { Line } from "rc-progress";
 
 import styled from "styled-components";
 
+import { useNavigate } from "react-router-dom";
+
 import {
   Flex,
   Box,
@@ -43,13 +45,14 @@ const LogContainer = styled.div`
 
 const ResultRow = ({ resultEntry }) => {
   const url = resultEntry.url,
-    m = resultEntry.measurement;
+    m = resultEntry.measurement,
+    explorerLink = `https://explorer.ooni.org/measurement/${m.report_id}?input=${m.input}`
   return (
     <Flex>
       <Box pr={2}>{m.test_keys.result == "ok" ? "✅" : "❌"}</Box>
       <Box pr={2}>{Math.round(m.test_keys.load_time_ms)} ms</Box>
       <Box pr={2}>
-        {url.category_code} - {url.url}
+        {url.category_code} - {url.url} (<a href={explorerLink}>on explorer</a>)
       </Box>
     </Flex>
   );
@@ -66,6 +69,8 @@ const RunningTest = () => {
 
   const runnerRef = useRef<Runner>();
   const logEndRef = useRef<HTMLDivElement>();
+
+  const navigate = useNavigate();
 
   let runnerOptions: RunnerOptions = {
     onLog: (l: string) => {
@@ -128,13 +133,18 @@ const RunningTest = () => {
           {running && (
             <Line percent={progress} strokeColor={theme.colors.gray5} />
           )}
-          {!running && (
-            <Button hollow inverted onClick={rerun}>
-              Rerun
-            </Button>
-          )}
         </Container>
       </HeroUnit>
+      {!running && (
+        <Box pt={2} pl={2}>
+          <Button hollow onClick={() => navigate("/")} mr={2}>
+            Home
+          </Button>
+          <Button onClick={rerun}>
+            Rerun
+          </Button>
+        </Box>
+      )}
       {running && (
         <LogContainer>
           {logs.map((l) => (
