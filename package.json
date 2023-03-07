@@ -9,7 +9,7 @@
     "build": "parcel build index.html",
     "lint": "prettier --write src/",
     "analyze": "parcel index.html --reporter @parcel/reporter-bundle-analyzer",
-    "deploy": "yarn run build && gh-pages -d dist"
+    "deploy": "yarn run build && echo probe-web.ooni.org > dist/CNAME && gh-pages -d dist"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
