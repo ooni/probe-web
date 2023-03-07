@@ -9,10 +9,8 @@ import {
   Button,
   Heading,
   Flex,
-  Box,
-  theme,
+  Box
 } from "ooni-components";
-import OONILogo from "./OONILogo";
 
 import { getBrowserName } from "./utils";
 
@@ -61,31 +59,20 @@ const Home = ({ onResetInformedConsent }) => {
       </AlertBanner>
       }
 
-      <Text>Ready to start an OONI Probe test? Click start below.</Text>
+      <Text>This is an experimental version of OONI Probe which checks for websites blocking by using your web browser.
+        Keep in mind that tests run using probe-web cannot be as accurate as those run with
+        the <a href="https://ooni.org/install/mobile">OONI Probe mobile</a> or <a href="https://ooni.org/install/desktop">desktop apps</a>.
+      </Text>
+
+      <Text>OONI Probe web is not designed to be a replacement for <a href="https://ooni.org/install/">OONI Probe</a> on mobile and desktop platforms.</Text>
 
       <Heading h={3}>Settings</Heading>
       <Flex flexWrap="wrap">
         <Box width={1 / 2}>
-          <Label>Upload results</Label>
-          <Controller
-            control={control}
-            name="uploadResults"
-            render={({ field: { onChange, onBlur, value, name } }) => (
-              <input
-                type="checkbox"
-                onChange={onChange}
-                onBlur={onBlur}
-                name={name}
-                checked={value}
-              />
-            )}
-          />
-        </Box>
-        <Box width={1 / 2}>
           <Label>URL Limit (0 for no limit)</Label>
           <Input defaultValue={0} {...register("urlLimit")} />
         </Box>
-        <Box width={1 / 2}>
+        <Box width={1 / 2} style={{ display: "none" }}>
           <Button hollow onClick={onResetInformedConsent}>
             Reset onboarding
           </Button>

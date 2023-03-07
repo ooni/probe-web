@@ -87,7 +87,7 @@ async function measure(input: string): Promise<[string, number]> {
 class Runner {
   geoip: GeoIPLookup;
 
-  apiBaseURL: string = "https://ams-pg-test.ooni.org";
+  apiBaseURL: string = "https://api.ooni.io";
 
   // onLog is a handler that is called whenever a log message needs to be
   // written to the log console.
@@ -250,6 +250,8 @@ class Runner {
     for (let idx = 0; idx < inputs.length; idx++) {
       let url_entry = inputs[idx];
       let progress = (idx / inputs.length) * 100;
+      // We skip http:// URLs because if they are blocked with blockpages, they
+      // would lead to false negatives.
       if (url_entry.url.startsWith("http://") === true) {
         this.onLog(`Skipping ${url_entry.url} because it's HTTP`);
         continue;
