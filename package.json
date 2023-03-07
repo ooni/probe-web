@@ -16,6 +16,7 @@
     "@babel/preset-react": "^7.17.12",
     "@parcel/reporter-bundle-analyzer": "^2.6.0",
     "@parcel/transformer-svg-react": "^2.5.0",
+    "buffer": "^6.0.3",
     "gh-pages": "^3.2.3",
     "parcel": "2.6.0",
     "prettier": "^2.6.2",
@@ -25,6 +26,7 @@
   "dependencies": {
     "@fontsource/fira-sans": "^4.5.10",
     "@rebass/forms": "^4.0.6",
+    "minimist": "^1.2.3",
     "ooni-components": "^0.5.0-alpha.5",
     "prop-types": "^15.8.1",
     "rc-progress": "^3.2.1",
@@ -42,7 +44,8 @@
     "remark-rehype": "^10.1.0",
     "styled-components": "^5.3.3",
     "unified": "^10.1.1",
-    "whatwg-fetch": "^3.6.2"
+    "whatwg-fetch": "^3.6.2",
+    "ws": "^7.4.6"
   },
   "resolutions": {
     "ansi-regex": "^5.0.1",
