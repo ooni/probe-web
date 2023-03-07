@@ -87,7 +87,7 @@ async function measure(input: string): Promise<[string, number]> {
 class Runner {
   geoip: GeoIPLookup;
 
-  apiBaseURL: string = "https://ams-pg-test.ooni.org";
+  apiBaseURL: string = "https://api.ooni.io";
 
   // onLog is a handler that is called whenever a log message needs to be
   // written to the log console.
