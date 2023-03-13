@@ -8,6 +8,7 @@
     "dev": "parcel serve index.html",
     "build": "parcel build index.html",
     "lint": "prettier --write src/",
+    "extract-strings": "formatjs extract 'src/**/*.{ts*,js*}'",
     "update-strings": "node scripts/update-strings.js",
     "analyze": "parcel index.html --reporter @parcel/reporter-bundle-analyzer",
     "deploy": "yarn run build && echo probe-web.ooni.org > dist/CNAME && gh-pages -d dist"
@@ -15,6 +16,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-react": "^7.17.12",
+    "@formatjs/cli": "^6.0.4",
     "@parcel/reporter-bundle-analyzer": "^2.6.0",
     "@parcel/transformer-svg-react": "^2.5.0",
     "axios": "^1.3.4",
@@ -29,6 +31,7 @@
   "dependencies": {
     "@fontsource/fira-sans": "^4.5.10",
     "@rebass/forms": "^4.0.6",
+    "markdown-to-jsx": "^7.1.9",
     "minimist": "^1.2.3",
     "ooni-components": "^0.5.0-alpha.5",
     "prop-types": "^15.8.1",

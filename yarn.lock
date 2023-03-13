@@ -386,6 +386,11 @@
   resolved "https://registry.yarnpkg.com/@fontsource/fira-sans/-/fira-sans-4.5.10.tgz#63a6dacfa482017a840b40e9c2cfefb187a0e515"
   integrity sha512-4Edj+GA0LYSqfXOvdTwVGmCShT8Ycd8bKzdfzM302n+I6Hsg6h3gBkBeNgN19PhkcngDznZyHv3EkyrKqvMTGw==
 
+"@formatjs/cli@^6.0.4":
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/@formatjs/cli/-/cli-6.0.4.tgz#f772639748ecb2173df0b028bf084df25e91d3f1"
+  integrity sha512-ivb+uUcYmHnffBkXM7OM4NDofxyfnVvW5G52p+M9Cg3DGMz3wVBm3TwW3SXgGGTft7CMWHeGQGXjxTOwBYKeEA==
+
 "@formatjs/ecma402-abstract@1.11.4":
   version "1.11.4"
   resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.11.4.tgz#b962dfc4ae84361f9f08fbce411b4e4340930eda"
@@ -2569,6 +2574,11 @@ make-dir@^3.0.2:
   integrity sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==
   dependencies:
     semver "^6.0.0"
+
+markdown-to-jsx@^7.1.9:
+  version "7.1.9"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.1.9.tgz#1ffae0cda07c189163d273bd57a5b8f8f8745586"
+  integrity sha512-x4STVIKIJR0mGgZIZ5RyAeQD7FEZd5tS8m/htbcVGlex32J+hlSLj+ExrHCxP6nRKF1EKbcO7i6WhC1GtOpBlA==
 
 mdast-util-definitions@^5.0.0:
   version "5.1.2"
