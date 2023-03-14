@@ -22,7 +22,7 @@ import { MdKeyboardArrowLeft } from "react-icons/md";
 
 import { Button, Box, Flex, Heading, Link } from "ooni-components";
 
-import FormattedMarkdownMessage from "../FormattedMarkdownMessage";
+import FormattedMarkdown from "../FormattedMarkdown";
 
 import Stepper from "./Stepper";
 import QuizSteps from "./QuizSteps";
@@ -50,6 +50,7 @@ const TopBar = styled(Box)`
 const OnboardBG = styled(Flex)`
   background: ${(props) => `no-repeat url(${props.img})`};
   background-color: ${(props) => props.bgColor || "#002b54"};
+  background-position-y: ${(props) => props.positionY || 0};
   background-size: contain;
   height: 500px;
 `;
@@ -96,17 +97,7 @@ const SectionThingsToKnow = ({
         </Heading>
       </Box>
       <Box width={2 / 3} my={0} mx="auto">
-        <ul>
-          <HeadsUpList>
-            <FormattedMessage id="Onboarding.ThingsToKnow.Bullet.1" />
-          </HeadsUpList>
-          <HeadsUpList>
-            <FormattedMessage id="Onboarding.ThingsToKnow.Bullet.2" />
-          </HeadsUpList>
-          <HeadsUpList>
-            <FormattedMessage id="Onboarding.ThingsToKnow.Bullet.3" />
-          </HeadsUpList>
-        </ul>
+        <FormattedMarkdown id="Onboarding.ThingsToKnow.Description" openInNewWindow/>
       </Box>
       <Box mx="auto">
         <Button inverted onClick={quizComplete ? onNext : toggleQuiz}>
@@ -114,10 +105,8 @@ const SectionThingsToKnow = ({
         </Button>
       </Box>
       <Box mt={3} mx="auto">
-        <Link href="https://ooni.org/about/risks/" passHref>
-          <Link color="gray3">
-            <FormattedMessage id="Settings.About.Content.LearnMore" />
-          </Link>
+        <Link color="gray3" href="https://ooni.org/about/risks/" passHref target="blank">
+          <FormattedMessage id="Settings.About.Content.LearnMore" />
         </Link>
       </Box>
     </Flex>
@@ -140,7 +129,7 @@ const SectionWhatIsOONI = ({ onNext }) => (
       </Heading>
     </Box>
     <Box width={1 / 2} my={3} px={4} mx="auto">
-      <FormattedMarkdownMessage id="Onboarding.WhatIsOONIProbe.Paragraph" />
+      <FormattedMarkdown id="Onboarding.WhatIsOONIProbe.Paragraph" openInNewWindow/>
     </Box>
     <Box mx="auto">
       <Button inverted onClick={onNext}>
@@ -162,35 +151,6 @@ const NoButton = styled(Button)`
   }
 `;
 
-const SectionCrashReporting = ({ onOptIn, onOptOut }) => (
-  <Flex flexDirection="column" alignItems="center">
-    <Box>
-      <Heading h={1}>
-        <FormattedMessage id="Onboarding.Crash.Title" />
-      </Heading>
-    </Box>
-    <Box width={1 / 2} my={3} px={4}>
-      <FormattedMarkdownMessage id="Onboarding.Crash.Paragraph" />
-    </Box>
-    <Flex
-      flexDirection="row"
-      alignItems="center"
-      justifyContent="center"
-      my={4}
-    >
-      <NoButton mx={2} hollow onClick={onOptOut}>
-        <FormattedMessage id="Onboarding.Crash.Button.No" />
-      </NoButton>
-      <Button mx={2} inverted onClick={onOptIn}>
-        <FormattedMessage id="Onboarding.Crash.Button.Yes" />
-      </Button>
-    </Flex>
-  </Flex>
-);
-SectionCrashReporting.propTypes = {
-  onOptIn: PropTypes.func,
-  onOptOut: PropTypes.func,
-};
 
 const SectionDefaultSettings = ({ onGo }) => (
   <Flex flexDirection="column">
@@ -218,7 +178,7 @@ const SectionDefaultSettings = ({ onGo }) => (
           </ul>
         </Box>
         <Box width={1 / 2} mt={4}>
-          <FormattedMarkdownMessage id="Onboarding.DefaultSettings.Paragraph" />
+          <FormattedMarkdown id="Onboarding.DefaultSettings.Paragraph" openInNewWindow/>
         </Box>
       </Flex>
     </Box>
@@ -245,9 +205,10 @@ const BackButtonContainer = styled.div`
   }
 `;
 
-const numSteps = 4;
+const numSteps = 3;
 
-const onboardingBGs = [onboardURL0, onboardURL1, onboardURL2, onboardURL2];
+const onboardingBGs = [onboardURL0, onboardURL1, onboardURL2];
+const onboardingBGOffsets = [null, "-70px", null]
 
 const Sections = ({ onGo }) => {
   const [activeSection, setActiveSection] = useState(0);
@@ -283,6 +244,7 @@ const Sections = ({ onGo }) => {
   return (
     <OnboardBG
       img={onboardingBGs[activeSection]}
+      positionY={onboardingBGOffsets[activeSection]}
       // last onboarding screen needs a darker background
       bgColor={activeSection === 3 ? "#001a33" : "#002b54"}
       flexDirection="column"
@@ -305,19 +267,6 @@ const Sections = ({ onGo }) => {
             />
           )}
           {activeSection === 2 && (
-            <SectionCrashReporting
-              onOptIn={() => {
-                setOptIn(true);
-                nextStep();
-              }}
-              onOptOut={() => {
-                setOptIn(false);
-                nextStep();
-              }}
-            />
-          )}
-
-          {activeSection === 3 && (
             <SectionDefaultSettings onGo={() => onGo(crashReportsOptIn)} />
           )}
         </Box>
