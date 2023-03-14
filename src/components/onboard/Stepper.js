@@ -26,8 +26,6 @@ const Stepper = ({ activeIdx }) => {
       <StepperCircle active={activeIdx > 0} />
       <StepperLine active={activeIdx > 1} />
       <StepperCircle active={activeIdx > 1} />
-      <StepperLine active={activeIdx > 2} />
-      <StepperCircle active={activeIdx > 2} />
     </Flex>
   );
 };

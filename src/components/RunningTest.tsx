@@ -52,7 +52,7 @@ const ResultRow = ({ resultEntry }) => {
       <Box pr={2}>{m.test_keys.result == "ok" ? "✅" : "❌"}</Box>
       <Box pr={2}>{Math.round(m.test_keys.load_time_ms)} ms</Box>
       <Box pr={2}>
-        {url.category_code} - {url.url} (<a href={explorerLink}>on explorer</a>)
+        {url.category_code} - {url.url} (<a href={explorerLink} target="blank">data</a>)
       </Box>
     </Flex>
   );

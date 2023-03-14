@@ -85,7 +85,7 @@ const Home = ({ onResetInformedConsent }) => {
         </Box>
       </Flex>
       <Button mt={3} onClick={handleSubmit(onStart)}>
-        Start
+        Run
       </Button>
     </Container>
   );
