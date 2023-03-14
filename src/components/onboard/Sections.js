@@ -128,7 +128,7 @@ const SectionWhatIsOONI = ({ onNext }) => (
         <FormattedMessage id="Onboarding.WhatIsOONIProbe.Title" />
       </Heading>
     </Box>
-    <Box width={1 / 2} my={3} px={4} mx="auto">
+    <Box width={1} my={3} px={4} mx="auto">
       <FormattedMarkdown id="Onboarding.WhatIsOONIProbe.Paragraph" openInNewWindow/>
     </Box>
     <Box mx="auto">
