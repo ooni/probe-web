@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import styled from "styled-components";
 
-import { Flex, Box, Heading, Modal, Text, theme } from "ooni-components";
+import { Flex, Box, Heading, Modal as BaseModal, Text, theme } from "ooni-components";
 import { Routes, Route, useNavigate } from "react-router-dom";
 
 import { FormattedMessage } from "react-intl"
@@ -36,10 +36,16 @@ const SideBar = styled.div`
   width: 300px;
   position: fixed;
   background-color: ${(props) => props.theme.colors.primary};
+  @media only screen and (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Content = styled.div`
   margin-left: 300px;
+  @media only screen and (max-width: 768px) {
+    margin-left: 0;
+  }
 `;
 
 const UnsupportedBrowserContainer = styled.div`
@@ -53,6 +59,12 @@ const OnboardSectionContainer = styled.div`
   color: ${(props) => props.theme.colors.white};
 `;
 
+const Modal = styled(BaseModal)`
+    border-radius: 30px;
+    @media only screen and (max-width: 768px) {
+        width: 100%;
+    }
+`
 
 const isBrowserSupported = () => {
   return 'fetch' in window
