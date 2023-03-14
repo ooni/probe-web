@@ -7,6 +7,8 @@ import styled from "styled-components";
 import { Flex, Box, Heading, Modal, Text, theme } from "ooni-components";
 import { Routes, Route, useNavigate } from "react-router-dom";
 
+import { FormattedMessage } from "react-intl"
+
 import RunningTest from "./components/RunningTest";
 import Sections from "./components/onboard/Sections";
 import Home from "./components/Home";
@@ -89,7 +91,7 @@ const App = () => {
             <Box width={1}>
               <OONILogo width={150} height={50} />
               <Heading h={3} color="white">
-                Probe Web
+                <FormattedMessage id="General.AppName" />
               </Heading>
             </Box>
           </Flex>
@@ -98,8 +100,12 @@ const App = () => {
 
           <Modal show={!isBrowserSupported()} sx={{ borderRadius: 30 }}>
             <UnsupportedBrowserContainer>
-              <Heading>Your browser is not supported</Heading>
-              <Text>Please upgrade to a modern browser</Text>
+              <Heading>
+                <FormattedMessage id="UnsupportedBrowser.Title" />
+              </Heading>
+              <Text>
+                <FormattedMessage id="UnsupportedBrowser.PleaseUpgrade" />
+            </Text>
               <ul>
                 <li><a href="https://www.mozilla.org/firefox/download/">Mozilla Firefox</a></li>
                 <li><a href="https://www.google.com/chrome/">Google Chrome</a></li>
